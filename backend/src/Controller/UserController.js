@@ -1,5 +1,6 @@
 const UserSchema = require('../Model/UserModel')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 
 const getData = async(req,resp) => {
@@ -53,10 +54,22 @@ const login = async(req,resp) => {
             // Compare password
             const isMatch = await bcrypt.compare(password, data.password);
             if (isMatch) {
+                // Generate token
+                const token = jwt.sign(
+                    { id: data._id, email: data.email, name: data.name },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1d' }
+                );
+
                 resp.status(200).json({
-                    message : "Login Successfully",
-                    data : data
-                })
+                    message: "Login Successfully",
+                    token: token,
+                    data: {
+                        id: data._id,
+                        name: data.name,
+                        email: data.email
+                    }
+                });
             } else {
                 resp.status(401).json({ message: "Invalid Credentials" });
             }
@@ -69,4 +82,4 @@ const login = async(req,resp) => {
 }
 
 
-module.exports = {getData, register, updateData, login}
+module.exports = {getData, register, login}

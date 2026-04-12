@@ -1,17 +1,33 @@
-import { createBrowserRouter } from "react-router-dom";
-import { RouterProvider } from "react-router-dom";
-import {Login} from "../Component/Common/Login";
-import {Register} from "../Component/Common/Register";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
+import { Login } from "../Component/Common/Login";
+import { Register } from "../Component/Common/Register";
+import Dashboard from "../Component/User/Dashboard";
+import ProtectedRoute from "./ProtectedRoute";
+import { AuthProvider } from "../Context/AuthContext";
 
 const router = createBrowserRouter([
-    {path : "/",element : <Login />},
-    {path : "/register",element : <Register />}
-])
+    // Public Routes
+    { path: "/", element: <Login /> },
+    { path: "/register", element: <Register /> },
+    
+    // Protected Routes
+    {
+        element: <ProtectedRoute />,
+        children: [
+            { path: "/dashboard", element: <Dashboard /> }
+        ]
+    },
+
+    // Catch-all/Default
+    { path: "*", element: <Navigate to="/" replace /> }
+]);
 
 const AppRouter = () => {
     return (
-        <RouterProvider router={router} />
-    )
-}
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
+    );
+};
 
-export default AppRouter
+export default AppRouter;
