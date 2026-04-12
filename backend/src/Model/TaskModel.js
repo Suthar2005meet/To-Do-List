@@ -6,7 +6,7 @@ const taskSchema = new Schema({
     description : String,
     status : {
         type : String,
-        enum : ['pending', 'completed'],
+        enum : ['pending', 'completed', 'rejected'],
         default : 'pending'
     },
     user : {

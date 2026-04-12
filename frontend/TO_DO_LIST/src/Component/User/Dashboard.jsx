@@ -76,8 +76,7 @@ const Dashboard = () => {
         }
     };
 
-    const handleToggleStatus = async (task) => {
-        const newStatus = task.status === 'pending' ? 'completed' : 'pending';
+    const handleUpdateStatus = async (task, newStatus) => {
         try {
             await api.put(`/task/update/${task._id}`, { status: newStatus });
             fetchTasks();
@@ -87,17 +86,19 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white p-4 md:p-8">
-            <nav className="flex justify-between items-center mb-8 md:mb-12 bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 md:p-6 rounded-2xl shadow-xl">
+        <div className="min-h-screen bg-[#0f172a] text-white p-3 sm:p-6 md:p-8">
+            <nav className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 md:mb-12 bg-slate-900/50 backdrop-blur-md border border-slate-800 p-4 md:p-6 rounded-2xl shadow-xl">
                 <div>
                     <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         To-Do Pro
                     </h1>
                 </div>
-                <div className="flex items-center gap-4 md:gap-6">
-                    <div className="text-right hidden sm:block">
-                        <p className="text-xs text-slate-400">Welcome back,</p>
-                        <p className="text-sm font-semibold text-indigo-300">{user?.name || 'User'}</p>
+                <div className="flex items-center gap-4 md:gap-6 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="text-right">
+                        <p className="text-[10px] sm:text-xs text-slate-400">Welcome,</p>
+                        <p className="text-xs sm:text-sm font-semibold text-indigo-300 truncate max-w-[120px] sm:max-w-none">
+                            {user?.name || 'User'}
+                        </p>
                     </div>
                     <button 
                         onClick={handleLogout}
@@ -108,9 +109,9 @@ const Dashboard = () => {
                 </div>
             </nav>
 
-            <main className="max-w-4xl mx-auto">
-                <div className="grid lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-lg">
+            <main className="max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800 rounded-3xl p-4 sm:p-6 md:p-8 shadow-lg">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 Your Tasks
@@ -124,7 +125,7 @@ const Dashboard = () => {
                             {loading ? (
                                 [1, 2, 3].map((i) => (
                                     <div key={i} className="flex items-center gap-4 bg-slate-800/30 p-4 rounded-2xl border border-slate-800/50 animate-pulse">
-                                        <div className="w-6 h-6 rounded-lg bg-slate-800"></div>
+                                        <div className="w-10 h-10 rounded-lg bg-slate-800"></div>
                                         <div className="flex-1 space-y-2">
                                             <div className="h-4 w-3/4 bg-slate-800 rounded"></div>
                                             <div className="h-3 w-1/4 bg-slate-800/50 rounded"></div>
@@ -133,44 +134,76 @@ const Dashboard = () => {
                                 ))
                             ) : tasks.length > 0 ? (
                                 tasks.map((task) => (
-                                    <div key={task._id} className={`flex items-start gap-4 p-4 rounded-2xl border transition-all duration-300 group ${task.status === 'completed' ? 'bg-indigo-500/5 border-indigo-500/20 opacity-75' : 'bg-slate-800/30 border-slate-800/50 hover:border-indigo-500/30'}`}>
-                                        <button 
-                                            onClick={() => handleToggleStatus(task)}
-                                            className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${task.status === 'completed' ? 'bg-indigo-500 border-indigo-500' : 'border-slate-700 group-hover:border-indigo-500/50'}`}
-                                        >
-                                            {task.status === 'completed' && (
-                                                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                </svg>
-                                            )}
-                                        </button>
-                                        <div className="flex-1 min-w-0" onClick={() => handleOpenModal(task)}>
-                                            <h3 className={`font-medium text-lg leading-tight truncate ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-200'}`}>
-                                                {task.title}
-                                            </h3>
-                                            <p className={`text-sm mt-1 line-clamp-2 ${task.status === 'completed' ? 'text-slate-600' : 'text-slate-400'}`}>
+                                    <div key={task._id} className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl border transition-all duration-300 group 
+                                        ${task.status === 'completed' ? 'bg-indigo-500/5 border-indigo-500/20' : 
+                                          task.status === 'rejected' ? 'bg-rose-500/5 border-rose-500/20' : 
+                                          'bg-slate-800/30 border-slate-800/50 hover:border-indigo-500/30'}`}>
+                                        
+                                        <div className="flex-1 min-w-0 w-full" onClick={() => handleOpenModal(task)}>
+                                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                <h3 className={`font-medium text-lg leading-tight truncate max-w-full
+                                                    ${task.status === 'completed' ? 'line-through text-slate-500' : 
+                                                      task.status === 'rejected' ? 'text-rose-400' : 'text-slate-200'}`}>
+                                                    {task.title}
+                                                </h3>
+                                                <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border shrink-0
+                                                    ${task.status === 'completed' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' : 
+                                                      task.status === 'rejected' ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 
+                                                      'bg-slate-800 border-slate-700 text-slate-500'}`}>
+                                                    {task.status}
+                                                </span>
+                                            </div>
+                                            <p className={`text-sm line-clamp-2 break-words
+                                                ${task.status === 'completed' ? 'text-slate-600' : 
+                                                  task.status === 'rejected' ? 'text-rose-900/60' : 'text-slate-400'}`}>
                                                 {task.description}
                                             </p>
                                         </div>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); handleOpenModal(task); }}
-                                                className="p-2 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-indigo-400 transition-colors"
-                                                title="Edit Task"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </button>
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); handleDelete(task._id); }}
-                                                className="p-2 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-rose-400 transition-colors"
-                                                title="Delete Task"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
+
+                                        <div className="flex items-center gap-2 w-full sm:w-auto justify-end sm:justify-start pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-800">
+                                            {task.status === 'pending' ? (
+                                                <>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleUpdateStatus(task, 'completed'); }}
+                                                        className="p-2 sm:p-2.5 bg-green-500/10 hover:bg-green-500/20 text-green-500 rounded-xl border border-green-500/20 transition-all active:scale-90"
+                                                        title="Mark as Complete"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleUpdateStatus(task, 'rejected'); }}
+                                                        className="p-2 sm:p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/20 transition-all active:scale-90"
+                                                        title="Mark as Rejected"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleUpdateStatus(task, 'pending'); }}
+                                                        className="p-2 hover:bg-slate-700 rounded-lg text-slate-500 hover:text-indigo-400 transition-colors"
+                                                        title="Reset to Pending"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                        </svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleDelete(task._id); }}
+                                                        className="p-2 sm:p-2.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl border border-rose-500/20 transition-all active:scale-90"
+                                                        title="Delete Task"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 ))
@@ -194,19 +227,19 @@ const Dashboard = () => {
                         </button>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 rounded-3xl p-6 shadow-lg backdrop-blur-sm">
+                    <div className="space-y-6 flex flex-col md:flex-row lg:flex-col gap-6 lg:gap-0">
+                        <div className="flex-1 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 rounded-3xl p-6 shadow-lg backdrop-blur-sm">
                             <h3 className="font-bold text-indigo-300 mb-2">Efficiency Boost</h3>
                             <p className="text-sm text-slate-400 leading-relaxed">
                                 Organize your day with priority tasks. Toggling a task as complete helps track your daily progress.
                             </p>
                         </div>
                         
-                        <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg">
+                        <div className="flex-1 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-lg min-w-0">
                             <h3 className="font-bold text-slate-300 mb-4 text-sm uppercase tracking-wider">User Details</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/30">
+                                    <div className="shrink-0 w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/30">
                                         {user?.name?.charAt(0) || 'U'}
                                     </div>
                                     <div className="min-w-0">
