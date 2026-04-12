@@ -12,6 +12,9 @@ DBConnection()
 const UserRoute = require('./src/Route/UserRoute')
 app.use('/user', UserRoute)
 
+const TaskRoute = require('./src/Route/TaskRoute')
+app.use('/task', TaskRoute)
+
 
 const PORT = process.env.PORT 
 app.listen(PORT, () => {
