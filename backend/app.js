@@ -6,7 +6,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: "https://your-frontend.vercel.app/"
+    origin: "https://tododolist.vercel.app"
 }));
 
 const DBConnection = require('./src/Config/DBConnection')
