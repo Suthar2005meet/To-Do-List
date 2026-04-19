@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3500', // Change this to your deployed URL if needed
+    baseURL: 'https://to-do-list-1-3yex.onrender.com', 
+    withCredentials: true,
 });
 
 // Add a request interceptor to include the JWT token
