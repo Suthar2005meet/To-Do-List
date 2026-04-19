@@ -4,12 +4,10 @@ require('dotenv').config()
 
 const app = express()
 
-app.use((req, res, next) => {
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    next();
-});
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+  origin: "https://your-frontend.vercel.app/"
+}));
 
 const DBConnection = require('./src/Config/DBConnection')
 DBConnection()
