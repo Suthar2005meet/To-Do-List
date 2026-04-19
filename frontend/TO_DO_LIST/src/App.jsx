@@ -7,7 +7,7 @@ function App() {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    axios.defaults.baseURL = "http://localhost:3500";
+    axios.defaults.baseURL = "https://to-do-list-1-3yex.onrender.com";
     axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
   }, []);
 
