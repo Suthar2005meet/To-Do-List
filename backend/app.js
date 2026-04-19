@@ -3,6 +3,11 @@ const cors = require('cors')
 require('dotenv').config()
 
 const app = express()
+
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+});
 app.use(express.json())
 app.use(cors())
 
