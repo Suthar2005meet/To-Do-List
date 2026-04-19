@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../Service/api';
 import { useAuth } from '../../Context/AuthContext';
 
 export const Login = () => {
@@ -15,7 +15,7 @@ export const Login = () => {
         setLoading(true);
         setAuthError('');
         try {
-            const response = await axios.post('/user/login', data);
+            const response = await api.post('/user/login', data);
             if (response.data.token) {
                 login(response.data.token);
                 navigate('/dashboard');

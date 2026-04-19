@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../Service/api';
 
 export const Register = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm();
@@ -13,7 +13,7 @@ export const Register = () => {
         setLoading(true);
         setAuthError('');
         try {
-            const response = await axios.post('http://localhost:3500/user/register', {
+            const response = await api.post('/user/register', {
                 name: data.name,
                 email: data.email,
                 password: data.password

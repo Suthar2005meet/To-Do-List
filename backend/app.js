@@ -5,10 +5,8 @@ require('dotenv').config()
 const app = express()
 
 app.use(express.json())
-app.use(cors({
-    origin: "https://tododolist.vercel.app"
-}));
-
+app.use(cors()); // Allow all origins for development
+    
 const DBConnection = require('./src/Config/DBConnection')
 DBConnection()
 
